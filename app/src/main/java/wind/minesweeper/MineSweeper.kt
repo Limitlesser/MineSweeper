@@ -31,29 +31,20 @@ class MineField(val width: Int, val height: Int, bombNum: Int) {
             block.open = true
             if (block.bomb) {
                 blocks.forEach { it.forEach { it.open = true } }
-            } else {
-                block.apply {
-                    bombNum = aroundBombs(x, y)
-                    if (bombNum == 0) {
-                        for (i in (x - 1)..(x + 1))
-                            for (j in (y - 1)..(y + 1)) {
-                                if (i in 0..(width - 1) && j in 0..(height - 1)) {
-                                    show(i, j)
-                                }
-                            }
-                    }
-                }
+            } else if (aroundBombs(x, y).filter { it.bomb }.isEmpty()) {
+                aroundBombs(x, y) { i, j -> show(i, j) }
             }
+
         }
     }
 
-    private fun aroundBombs(x: Int, y: Int): Int {
-        var bombs = 0
+    private fun aroundBombs(x: Int, y: Int, block: ((Int, Int) -> Unit)? = null): List<Block> {
+        val bombs = mutableListOf<Block>()
         for (i in (x - 1)..(x + 1))
             for (j in (y - 1)..(y + 1)) {
                 if (i in 0..(width - 1) && j in 0..(height - 1)) {
-                    if (blocks[i][j].bomb)
-                        bombs++
+                    bombs.add(blocks[i][j])
+                    block?.invoke(i, j)
                 }
             }
         return bombs
