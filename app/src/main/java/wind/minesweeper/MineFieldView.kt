@@ -17,7 +17,6 @@ import android.view.View
 class MineFieldView(context: Context, val mineField: MineField) : View(context) {
 
     val paint = Paint()
-
     val cell = Point()
 
     val gestureDetector: GestureDetectorCompat = GestureDetectorCompat(context, object : GestureDetector.SimpleOnGestureListener() {
@@ -25,7 +24,7 @@ class MineFieldView(context: Context, val mineField: MineField) : View(context) 
         override fun onDown(e: MotionEvent?) = true
 
         override fun onSingleTapUp(e: MotionEvent): Boolean {
-            mineField.show((e.x / cell.x).toInt(), (e.y / cell.y).toInt())
+            mineField.open((e.x / cell.x).toInt(), (e.y / cell.y).toInt())
             invalidate()
             return true
         }
@@ -33,8 +32,7 @@ class MineFieldView(context: Context, val mineField: MineField) : View(context) 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        cell.set(measuredWidth / mineField.width,
-                measuredHeight / mineField.height)
+        cell.set(measuredWidth / mineField.width, measuredHeight / mineField.height)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -47,13 +45,13 @@ class MineFieldView(context: Context, val mineField: MineField) : View(context) 
                 if (block.isOpen) {
                     if (block.isBomb) {
                         paint.color = Color.WHITE
-                        drawBlock(canvas, x, y)
+                        canvas.drawRect(x + 3, y + 3, (x + cell.x) - 3, (y + cell.y) - 3, paint)
                         paint.color = Color.RED
-                        canvas.drawCircle(x + cell.x / 2, y + cell.y / 2
-                                , Math.min(cell.x, cell.y) / 2.toFloat() - 5, paint)
+                        canvas.drawCircle(x + cell.x / 2, y + cell.y / 2,
+                                Math.min(cell.x, cell.y) / 2.toFloat() - 5, paint)
                     } else {
                         paint.color = Color.WHITE
-                        drawBlock(canvas, x, y)
+                        canvas.drawRect(x + 3, y + 3, (x + cell.x) - 3, (y + cell.y) - 3, paint)
                         paint.color = Color.DKGRAY
                         paint.textSize = 20f
                         if (block.aroundBombNum > 0)
@@ -62,17 +60,10 @@ class MineFieldView(context: Context, val mineField: MineField) : View(context) 
                     }
                 } else {
                     paint.color = Color.GRAY
-                    drawBlock(canvas, x, y)
+                    canvas.drawRect(x + 3, y + 3, (x + cell.x) - 3, (y + cell.y) - 3, paint)
                 }
             }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return gestureDetector.onTouchEvent(event)
-    }
-
-    private fun drawBlock(canvas: Canvas, x: Float, y: Float) =
-            canvas.drawRect(x + 3, y + 3, (x + cell.x) - 3, (y + cell.y) - 3, paint)
-
-
+    override fun onTouchEvent(event: MotionEvent?) = gestureDetector.onTouchEvent(event)
 }

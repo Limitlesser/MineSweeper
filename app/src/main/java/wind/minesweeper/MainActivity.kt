@@ -9,14 +9,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mineField = MineField(width = 20, height = 10, bombNum = 20)
-        val mineFieldView = MineFieldView(this, mineField);
+        val mineFieldView = MineFieldView(this, mineField)
         mineField.onGameOver = { succ ->
             alert(if (succ) "You are Successed!" else "You are Failed!") {
                 positiveButton("Go on") {
                     mineField.reset()
                     mineFieldView.invalidate()
                 }
-            }.show().setCanceledOnTouchOutside(false)
+            }.show().setCancelable(false)
         }
         setContentView(mineFieldView)
     }
