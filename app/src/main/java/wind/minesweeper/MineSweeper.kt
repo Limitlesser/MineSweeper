@@ -31,8 +31,11 @@ class MineField(val width: Int, val height: Int, bombNum: Int) {
             block.open = true
             if (block.bomb) {
                 blocks.forEach { it.forEach { it.open = true } }
-            } else if (aroundBombs(x, y).filter { it.bomb }.isEmpty()) {
-                aroundBombs(x, y) { i, j -> show(i, j) }
+            } else {
+                block.bombNum = aroundBombs(x, y).filter { it.bomb }.size
+                if (block.bombNum == 0) {
+                    aroundBombs(x, y) { i, j -> show(i, j) }
+                }
             }
 
         }
