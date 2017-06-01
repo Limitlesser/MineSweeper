@@ -8,16 +8,21 @@ import java.util.*
 
 data class Block(val isBomb: Boolean, var isOpen: Boolean = false, var aroundBombNum: Int = 0)
 
-class MineField(val width: Int, val height: Int, bombNum: Int) {
+class MineField(val width: Int, val height: Int, val bombNum: Int) {
 
-    val blocks: Array<Array<Block>>
+    lateinit var blocks: Array<Array<Block>>
+
+    var onGameOver: ((Boolean) -> Unit)? = null
 
     init {
+        reset()
+    }
+
+    fun reset() {
         val bombs = List(width * height) {
             Block(it < bombNum)
         }.apply { Collections.shuffle(this) }
-        blocks = Array(width) {
-            i ->
+        blocks = Array(width) { i ->
             Array(height) {
                 j ->
                 bombs[i * height + j]
@@ -31,15 +36,19 @@ class MineField(val width: Int, val height: Int, bombNum: Int) {
             block.isOpen = true
             if (block.isBomb) {
                 blocks.forEach { it.forEach { it.isOpen = true } }
+                onGameOver?.invoke(false)
+                return
             } else {
                 block.aroundBombNum = aroundBombs(x, y).filter { it.isBomb }.size
                 if (block.aroundBombNum == 0) {
                     aroundBombs(x, y) { i, j -> show(i, j) }
                 }
             }
-
+            if (blocks.flatMap { it.asIterable() }.filter { !it.isBomb && !it.isOpen }.isEmpty())
+                onGameOver?.invoke(true)
         }
     }
+
 
     private fun aroundBombs(x: Int, y: Int, block: ((Int, Int) -> Unit)? = null): List<Block> {
         val bombs = mutableListOf<Block>()
