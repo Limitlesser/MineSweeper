@@ -61,7 +61,7 @@ class MineFieldView(context: Context, val mineField: MineField) : View(context) 
                                     y + cell.y / 2 + 5, paint)
                     }
                 } else {
-                    paint.color = Color.DKGRAY
+                    paint.color = Color.GRAY
                     drawBlock(canvas, x, y)
                 }
             }

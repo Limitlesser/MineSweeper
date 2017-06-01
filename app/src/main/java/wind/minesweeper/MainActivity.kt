@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
                     mineField.reset()
                     mineFieldView.invalidate()
                 }
-            }.show()
+            }.show().setCanceledOnTouchOutside(false)
         }
         setContentView(mineFieldView)
     }
